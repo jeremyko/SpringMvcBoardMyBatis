@@ -54,6 +54,25 @@
         <property name="dataSource" ref="dataSource" />  
     </bean>  
   
+    <mvc:annotation-driven />
+    
     <tx:annotation-driven transaction-manager="transactionManager" /> 
+    
+    
+    <!-- Mapper! -->
+    <bean id="boardMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+      <property name="mapperInterface" value="kojh.spring.mappers.BoardMapper" />
+      <property name="sqlSessionFactory" ref="sqlSessionFactory" />
+    </bean>
+    
+    <!-- BoardService -->
+    <!-- 
+    원래는 인터페이스를 정의하고  그 구현을 만들어서 하게끔 권장됨 (여러개의 DB사용의 경우)
+    테스트 용으로 바로 구현 클래스로 대체됨. 
+    -->
+    <bean id="boardService" class="kojh.spring.board.BoardService">
+      <!-- @Autowired 로 처리하므로 불필요 -->
+      <!-- <property name="boardMapper" ref="boardMapper" /> -->
+    </bean>
 		
 </beans>
