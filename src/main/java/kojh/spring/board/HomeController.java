@@ -32,13 +32,16 @@ public class HomeController
 	public String home(Locale locale, Model model) {
 		logger.info("Welcome home! the client locale is "+ locale.toString());
 		
-		Date date = new Date();
-		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);		
-		String formattedDate = dateFormat.format(date);		
-		model.addAttribute("serverTime", formattedDate );
+		//Date date = new Date();
+		//DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);		
+		//String formattedDate = dateFormat.format(date);		
+		//model.addAttribute("serverTime", formattedDate );
 		
 		//목록을 조회후 저장 시킴.
+		model.addAttribute("totalCnt", new Integer(boardService.getTotalCnt(null)) ); //Integer objects
 		model.addAttribute("boardList", boardService.getList(1, null, 2) );
+		
+		
 		return "home";
 		
 		//inserted ay home TEST!!!!

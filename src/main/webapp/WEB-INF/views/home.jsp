@@ -21,9 +21,6 @@
 --%>
 
 
-
-
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page session="false" %>
 
 <%@ page import="kojh.db.beans.BoardBean"%>
@@ -38,27 +35,31 @@
 </head>
 
 <%-- 
-<c:set var="list" scope="session" value="boardList"/>
-
-<%ArrayList<BoardBean> list = %><c:out value="${boardList }" /> <% ; %>
+How do I access a JSTL variable in a scriptlet?
+http://www.avajava.com/tutorials/lessons/how-do-i-access-a-jstl-variable-in-a-scriptlet.html
 --%>
 
-<%
-    //불필요 경고 방지
-    @SuppressWarnings("unchecked")
-    //ArrayList<BoardBean> list = (ArrayList<BoardBean>) request.getAttribute("infoArryList");
-    //String str_c_page = ((Integer) request.getAttribute("str_c_page")).toString();    
-    //int total_cnt = ((Integer) request.getAttribute("totalCnt")).intValue();
+<%--
+<P>  The time on the server is ${serverTime}. </P>
+--%>
+
+<c:set var="list" value="${boardList}" />
+<c:set var="total_cnt" value="${totalCnt}" />
+
+<%                
     //int c_page = ((Integer) request.getAttribute("str_c_page")).intValue(); //현재 페이지 구분
-    
-    //test
-    ArrayList<BoardBean> list = new ArrayList<BoardBean> ();
-    String str_c_page = "1";
-    int total_cnt = 0;
+    //String str_c_page = ((Integer) request.getAttribute("str_c_page")).toString();       
+
+    ArrayList<BoardBean> list = (ArrayList<BoardBean>) pageContext.getAttribute("list") ; //jstl in code
+    int total_cnt = ((Integer)(pageContext.getAttribute("total_cnt"))).intValue()  ;
+    String str_c_page = "1";    
     int c_page = 1;
+    
+    System.out.println("list cnt="+list.size());
+    System.out.println("total_cnt="+total_cnt);
 %>
 
-<P>  The time on the server is ${serverTime}. </P>
+
 
 <table cellspacing=1 width=700 border=0>
     <tr>
@@ -81,24 +82,21 @@
         <td width=100><p align=center>조회수</p>
         </td>
     </tr>
-    <%
-        for (int i = 0; i < list.size(); i++) {
-        	BoardBean info = list.get(i);
-    %>
-    <tr>
-        <td width=50><p align=center><%=info.getId()%></p></td>
-        <td width=100><p align=center><%=info.getName()%></p></td>                
+   
+    <c:forEach var="board" items="${boardList}">
+        <tr>
+        <td width=50><p align=center>${board.getId()}</p></td>
+        <td width=100><p align=center>${board.getName()}</p></td>                
         <td width=320>
             <p align=center>
-                <a href="/bbsModel2/view.work?str_aid=<%=info.getId()%>&str_c_page=<%=str_c_page%>" title="<%=info.getMemo() %>"> <%=info.getSubject() %>
+                <a href="/SpringMvcBoardMyBatis/viewWork?memo_id=${board.getId()}&current_page=<%=str_c_page%>" title="${board.getMemo()}"><c:out value="${board.getSubject()}"/>
             </p>
         </td>                      
-        <td width=100><p align=center><%=info.getCreated_date()%></p></td>
-        <td width=100><p align=center><%=info.getHits() %></p></td>
+        <td width=100><p align=center><c:out value="${board.getCreated_date()}"/></p></td>
+        <td width=100><p align=center><c:out value="${board.getHits()}"/></p></td>
     </tr>
-    <%
-        }
-    %>
+    </c:forEach>
+    
     
     
     <%-- 다음의 페이지 처리하는 부분도 별도의 클래스에서 처리할수도 있겠다.. --%>
@@ -181,7 +179,7 @@
             for (int i = 1; i <= total_pages; i++) 
             {
             %>           
-                <a href="/bbsModel2/list.work?str_c_page=<%=i%>" >                
+                <a href="/SpringMvcBoardMyBatis/listSpecificPageWork?str_c_page=<%=i%>" >                
                 
                 <%
                 if (c_page == i)
@@ -201,7 +199,7 @@
 
 <table width=700>
     <tr>
-        <td><input type=button value="글쓰기"  OnClick="window.location='/bbsModel2/show_write_form.work'">    </td>
+        <td><input type=button value="글쓰기"  OnClick="window.location='/SpringMvcBoardMyBatis/show_write_form'">    </td>
         <td><form name=searchf method=post action="/bbsModel2/list.work"> 
             <p align=right><input type=text name=dbsearch size=50  maxlength=50>
             <input type=submit value="글찾기"></p>
