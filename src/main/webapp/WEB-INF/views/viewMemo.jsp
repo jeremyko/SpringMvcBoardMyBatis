@@ -24,7 +24,13 @@
     	location.href='<%=request.getContextPath()%>/listSpecificPageWork?current_page=${current_page}';
     	--%>
     
-    	location.href='/SpringMvcBoardMyBatis/listSpecificPageWork?current_page=${current_page}';
+    	location.href = '/SpringMvcBoardMyBatis/listSpecificPageWork?current_page=${current_page}';
+    }
+    
+    function boardmodify() 
+    {
+        location.href='/SpringMvcBoardMyBatis/listSpecificPageWork_to_update?memo_id=${memo_id}&current_page=${current_page}';   
+                
     }
     
     <%--
@@ -33,13 +39,7 @@
         location.href = '/bbsModel2/delete.work?str_aid=<%=str_aid%>&str_c_page=<%=str_c_page%>';
     }
     
-    function boardmodify() 
-    {
-        location.href = '/bbsModel2/view_to_update.work?str_aid=<%=str_aid%>&str_c_page=<%=str_c_page%>';    
-        
-        //No..
-        //location.href = '/bbsModel2/view_to_update.work';
-    }
+    
     --%>
 </script>
 

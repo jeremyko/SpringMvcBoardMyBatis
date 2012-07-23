@@ -179,7 +179,7 @@ http://www.avajava.com/tutorials/lessons/how-do-i-access-a-jstl-variable-in-a-sc
             for (int i = 1; i <= total_pages; i++) 
             {
             %>           
-                <a href="/SpringMvcBoardMyBatis/listSpecificPageWork?str_c_page=<%=i%>" >                
+                <a href="/SpringMvcBoardMyBatis/listSpecificPageWork?current_page=<%=i%>" >                
                 
                 <%
                 if (c_page == i)

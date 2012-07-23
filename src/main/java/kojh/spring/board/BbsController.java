@@ -72,7 +72,7 @@ public class BbsController
 		
 		//목록을 조회후 저장 시킴.
 		model.addAttribute("totalCnt", new Integer(boardService.getTotalCnt(null)) ); //Integer objects
-		model.addAttribute("boardList", boardService.getList(1, null, 2) );
+		model.addAttribute("boardList", boardService.getList(1, null, 2) ); // 1 page 내용을 출력(2개 rows)
 			
 		return "home";		
 	}
@@ -105,11 +105,53 @@ public class BbsController
 	{
 		logger.info("listSpecificPageWork called!!");
 		logger.info("current_page=["+current_page+"]");
-			
-		//model.addAttribute("memo_id", memo_id ); 
-		//model.addAttribute("current_page", current_page ); 
-		//model.addAttribute("boardData", boardService.getSpecificRow(memo_id) ); 
+				 
+		model.addAttribute("totalCnt", new Integer(boardService.getTotalCnt(null)) );
+		model.addAttribute("current_page", current_page ); 
+		model.addAttribute("boardList", boardService.getList( Integer.parseInt(current_page), null, 2)); 
 					
+		return "listSpecificPage";		
+	}
+	
+	// 특정 페이지 수정을 위한 내용 출력
+	@RequestMapping(value = "/listSpecificPageWork_to_update", method = RequestMethod.GET)
+	public String listSpecificPageWork_to_update	(	
+								@RequestParam("memo_id") String memo_id,
+								@RequestParam("current_page") String current_page,
+								Model model
+							) 
+	{
+		logger.info("listSpecificPageWork_to_update called!!");
+		logger.info("memo_id=["+ memo_id+"] current_page=["+current_page+"]");
+			
+		model.addAttribute("memo_id", memo_id ); 
+		model.addAttribute("current_page", current_page ); 
+		model.addAttribute("boardData", boardService.getSpecificRow(memo_id) ); 
+		
+			
+		return "viewMemoForUpdate";		
+	}
+	
+	//개별 row 업데이트
+	@RequestMapping(value = "/DoUpdateBoard", method = RequestMethod.POST)
+	public String DoUpdateBoard( 
+			                    BoardBean boardBeanObjToUpdate, 
+			                    @RequestParam("memo_id") String memo_id,
+			                    @RequestParam("current_page") String current_page,
+								Model model) 
+	{
+		logger.info("DoUpdateBoard called!!");
+		logger.info("listSpecificPageWork_to_update called!!");
+		logger.info("memo_id=["+ memo_id+"] current_page=["+current_page+"]");
+		logger.info("memo=["+boardBeanObjToUpdate.getMemo()+"]");						
+		
+		/*
+		boardService.updateBoard(boardBeanObjToUpdate);				
+		*/
+		model.addAttribute("totalCnt", new Integer(boardService.getTotalCnt(null)) );
+		model.addAttribute("current_page", current_page ); 
+		model.addAttribute("boardList", boardService.getList( Integer.parseInt(current_page), null, 2));
+			
 		return "listSpecificPage";		
 	}
 			

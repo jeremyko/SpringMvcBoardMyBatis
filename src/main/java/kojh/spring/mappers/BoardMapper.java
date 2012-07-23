@@ -54,7 +54,8 @@ public interface  BoardMapper
 	) WHERE page = 2	
 	*/
 	
-	final String SELECT_ALL = "SELECT ID,SUBJECT,NAME,CREATED_DATE,MAIL,MEMO,HITS from SPRING_BOARD ORDER BY ID DESC";
+	//final String SELECT_ALL = "SELECT ID,SUBJECT,NAME,CREATED_DATE,MAIL,MEMO,HITS from SPRING_BOARD ORDER BY ID DESC";
+	final String SELECT_PAGE = "SELECT * FROM (	SELECT	ID,SUBJECT,NAME, CREATED_DATE, MAIL,MEMO,HITS, ceil( rownum / #{rowsPerPage} ) as page FROM SPRING_BOARD  ORDER BY ID DESC ) WHERE page = #{page}";
 	
 	final String SELECT_BY_ID = "SELECT ID,SUBJECT,NAME,CREATED_DATE,MAIL,MEMO,HITS from SPRING_BOARD WHERE ID=#{id}";
 	
@@ -66,7 +67,7 @@ public interface  BoardMapper
 		"VALUES( SEQ_ID.NEXTVAL,#{subject}, #{name}, SYSDATE, #{mail}, #{memo})";
 	//BoardBean 의 속성들과 도일한 이름으로 #{mail} 등을 지정해야한다.
 			
-	@Select(SELECT_ALL)
+	@Select(SELECT_PAGE)
 	@Results(value = {
 	        @Result(property="id", column="ID"),
 	        @Result(property="subject", column="SUBJECT"),
@@ -76,7 +77,7 @@ public interface  BoardMapper
 	        @Result(property="memo", column="MEMO"),
 	        @Result(property="hits", column="HITS")
 	    })
-	ArrayList<BoardBean> getList(int nStartPage, String dbsearch,int list_num);
+	ArrayList<BoardBean> getList(@Param("page") int page, String dbsearch, @Param("rowsPerPage") int rowsPerPage);
 	
 	
 	@Select(SELECT_BY_ID)
