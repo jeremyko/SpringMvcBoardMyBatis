@@ -38,8 +38,8 @@ public class HomeController
 		//model.addAttribute("serverTime", formattedDate );
 		
 		//목록을 조회후 저장 시킴.
-		model.addAttribute("totalCnt", new Integer(boardService.getTotalCnt(null)) ); //Integer objects
-		model.addAttribute("boardList", boardService.getList(1, null, 2) );
+		model.addAttribute("totalCnt", new Integer(boardService.getTotalCnt()) ); //Integer objects
+		model.addAttribute("boardList", boardService.getList(1, 2) );
 		
 		
 		return "home";

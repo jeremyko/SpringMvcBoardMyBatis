@@ -32,15 +32,12 @@
         location.href='/SpringMvcBoardMyBatis/listSpecificPageWork_to_update?memo_id=${memo_id}&current_page=${current_page}';   
                 
     }
-    
-    <%--
+       
     function boarddelete() 
     {
-        location.href = '/bbsModel2/delete.work?str_aid=<%=str_aid%>&str_c_page=<%=str_c_page%>';
-    }
-    
-    
-    --%>
+    	location.href='/SpringMvcBoardMyBatis/DeleteSpecificRow?memo_id=${memo_id}&current_page=${current_page}';        
+    }    
+   
 </script>
 
 

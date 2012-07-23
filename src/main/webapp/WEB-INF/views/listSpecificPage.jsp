@@ -167,8 +167,8 @@
 <table width=700>
     <tr>
         <td><input type=button value="글쓰기"  OnClick="window.location='/SpringMvcBoardMyBatis/show_write_form'">    </td>
-        <td><form name=searchf method=post action="/bbsModel2/list.work"> 
-            <p align=right><input type=text name=dbsearch size=50  maxlength=50>
+        <td><form name=searchf method=post action="/SpringMvcBoardMyBatis/searchWithSubject"> 
+            <p align=right><input type=text name=searchStr size=50  maxlength=50>
             <input type=submit value="글찾기"></p>
         </td>
     </tr>

@@ -41,21 +41,6 @@
 viewMemoForUpdate!!! memo_id  <c:out value="${memo_id}"/> current_page <c:out value="${current_page}"/>
 </body>
 
-<%-- 
-<form name=modifyform method=post action="/bbsModel2/listSpecificPageWork">
-<table cellspacing = 0 cellpadding = 5 border = 1 width=500>
-    
-    <input type=hidden name=aid  value="${memo_id}">    
-    <input type=hidden name=current_page  value="${current_page}">
-    
-    <tr><td><b>이름 </b></td><td> <c:out value="${boardData.getName()}"/><input type=hidden name=dbname size=50  maxlength=30 value="${boardData.getName()}"> </td></tr>
-    <tr><td><b>이메일 </b></td><td> <input type=text name=dbemail size=50  maxlength=50 value="${boardData.getMail()}">  </td></tr>    
-    <tr><td><b>제목 </b></td><td><input type=text name=dbsubject size=50  maxlength=50 value="${boardData.getSubject()}"></td></tr>     
-    <tr><td><b>내용 </b></td><td><textarea name=dbmemo cols=50 rows=10><c:out value="${boardData.getMemo()}"/></textarea></td></tr>     
-</table>
-</form>
---%>
-
 <c:url var="updateUrl" value="/DoUpdateBoard" />
 <sf:form modelAttribute="boardData" method="POST" action="${updateUrl}">  
    

@@ -12,39 +12,14 @@ import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.Delete;
 import kojh.db.beans.BoardBean;
 
 public interface  BoardMapper
 {
 	//조회할 범위가 지정된다.
-	/*
-	 --page1
-	 5          <--- rownum =1
-	 4          <--- rownum =2
-	 --page2
-	 3          <--- rownum =3
-	 2          <--- rownum =4
-	 --page3
-	 1          <--- rownum =5
-	  
-	 * 2 page 조회
-	 startRowNum = total_cnt - (nStartPage - 1) * list_num; 
-	 3           = 5         - ((2-1)           * 2 ) 
-				
-	SELECT RNUM,ID,SUBJECT,NAME,TO_CHAR(CREATED_DATE, 'yyyy/mm/dd hh:mi:ss'), MAIL,MEMO,HITS FROM (
-	    SELECT RNUM, ID,SUBJECT,NAME, CREATED_DATE, MAIL,MEMO,HITS FROM (
-	    	SELECT ROWNUM RNUM, ID,SUBJECT,NAME, CREATED_DATE, MAIL,MEMO,HITS FROM SPRING_BOARD  ORDER BY ID DESC
-	    ) WHERE RNUM <= 3 (startRowNum)
-	) WHERE RNUM <= 2 (list_num)
-	
-	// http://www.javaservice.net/~java/bbs/read.cgi?m=etc&b=dbms&c=r_p&n=1040698828&p=10&s=t
-	SELECT * FROM (
-		SELECT	/ *+ INDEX(articles 정렬하고 싶은 인덱스명) * /  
-				article_id, title,date ceil( rownum / 한화면당 갯수 ) as page
-				FROM articles
-		WHERE 조건들....
-	) WHERE page = 출력하고 싶은 페이지번호
-	
+	/*	
 	SELECT ID,SUBJECT,NAME,TO_CHAR(CREATED_DATE,'yyyy/mm/dd hh:mi:ss'), MAIL,MEMO,HITS
 	FROM	
 	(
@@ -53,20 +28,29 @@ public interface  BoardMapper
 		FROM 	SPRING_BOARD	A
 	) WHERE page = 2	
 	*/
-	
-	//final String SELECT_ALL = "SELECT ID,SUBJECT,NAME,CREATED_DATE,MAIL,MEMO,HITS from SPRING_BOARD ORDER BY ID DESC";
-	final String SELECT_PAGE = "SELECT * FROM (	SELECT	ID,SUBJECT,NAME, CREATED_DATE, MAIL,MEMO,HITS, ceil( rownum / #{rowsPerPage} ) as page FROM SPRING_BOARD  ORDER BY ID DESC ) WHERE page = #{page}";
+		
+	final String SELECT_PAGE = "SELECT * FROM (	SELECT	ID,SUBJECT,NAME, CREATED_DATE, MAIL,MEMO,HITS, ceil( rownum / #{rowsPerPage} ) as page "+
+			"FROM SPRING_BOARD  ORDER BY ID DESC ) WHERE page = #{page}";
 	
 	final String SELECT_BY_ID = "SELECT ID,SUBJECT,NAME,CREATED_DATE,MAIL,MEMO,HITS from SPRING_BOARD WHERE ID=#{id}";
 	
-	final String SELECT_CNT_BY_SUBJECT = "SELECT count(1) FROM SPRING_BOARD WHERE SUBJECT LIKE '%#{likeThis}%'";
-	
+	//  '%#{searchThis}%' 로 사용시 에러! java.sql.SQLException: 부적합한 열 인덱스
+	final String SELECT_CNT_BY_SUBJECT = "SELECT COUNT(1) FROM SPRING_BOARD WHERE SUBJECT LIKE '%'||'${searchThis}'||'%'";
+		
+	final String SELECT_ROWS_BY_SUBJECT = "SELECT * FROM (SELECT ID,SUBJECT,NAME, CREATED_DATE, MAIL,MEMO,HITS, "+
+			"ceil( rownum / #{rowsPerPage}) as page FROM SPRING_BOARD  WHERE SUBJECT LIKE '%'||'${likeThis}'||'%' ORDER BY ID DESC ) WHERE page = #{page}";
+		
 	final String SELECT_CNT_ALL = "SELECT count(1) FROM SPRING_BOARD";
 	
 	final String INSERT = "INSERT INTO SPRING_BOARD (ID,SUBJECT,NAME,CREATED_DATE,MAIL,MEMO) " +
 		"VALUES( SEQ_ID.NEXTVAL,#{subject}, #{name}, SYSDATE, #{mail}, #{memo})";
-	//BoardBean 의 속성들과 도일한 이름으로 #{mail} 등을 지정해야한다.
-			
+	
+	final String UPDATE_BY_ID = "UPDATE SPRING_BOARD SET SUBJECT= #{subject},MAIL= #{mail},MEMO= #{memo} WHERE ID= #{id}";
+	   
+	final String DELETE_BY_ID= "DELETE FROM SPRING_BOARD WHERE ID=#{id}";
+	
+	
+	//BoardBean 의 속성들과 동일한 이름으로 #{mail} 등을 지정해야한다.			
 	@Select(SELECT_PAGE)
 	@Results(value = {
 	        @Result(property="id", column="ID"),
@@ -77,7 +61,7 @@ public interface  BoardMapper
 	        @Result(property="memo", column="MEMO"),
 	        @Result(property="hits", column="HITS")
 	    })
-	ArrayList<BoardBean> getList(@Param("page") int page, String dbsearch, @Param("rowsPerPage") int rowsPerPage);
+	ArrayList<BoardBean> getList(@Param("page") int page, @Param("rowsPerPage") int rowsPerPage);
 	
 	
 	@Select(SELECT_BY_ID)
@@ -99,11 +83,31 @@ public interface  BoardMapper
 	
 	// 해당 주제의 관련글 갯수를 조회
 	@Select(SELECT_CNT_BY_SUBJECT)
-	int getTotalCntBySubject(@Param("likeThis") String includingThis);
-		
+	int getTotalCntBySubject(@Param("searchThis") String includingThis);
+	
+	//해당 주제의 관련글 조회
+	@Select(SELECT_ROWS_BY_SUBJECT)
+	@Results(value = {
+	        @Result(property="id", column="ID"),
+	        @Result(property="subject", column="SUBJECT"),
+	        @Result(property="name", column="NAME"),
+	        @Result(property="created_date", column="CREATED_DATE"),
+	        @Result(property="mail", column="MAIL"),
+	        @Result(property="memo", column="MEMO"),
+	        @Result(property="hits", column="HITS")
+	    })
+	public ArrayList<BoardBean> getSearchedList(@Param("page") int page, 
+												@Param("rowsPerPage") int rowsPerPage, 
+												@Param("likeThis") String strSearchThis);
+	
 	@Insert(INSERT)
 	//@Options(useGeneratedKeys = true, keyProperty = "id")
 	void insertBoard (BoardBean boardBean);
+		
+	@Update(UPDATE_BY_ID)
+	void updateBoard (@Param("id") int id,@Param("subject") String subject, @Param("mail") String mail,@Param("memo") String memo);	
 	
+	@Delete(DELETE_BY_ID)
+	void deleteSpecificRow(@Param("id") int id);
 	
 }
