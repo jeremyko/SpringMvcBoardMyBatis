@@ -39,10 +39,6 @@ How do I access a JSTL variable in a scriptlet?
 http://www.avajava.com/tutorials/lessons/how-do-i-access-a-jstl-variable-in-a-scriptlet.html
 --%>
 
-<%--
-<P>  The time on the server is ${serverTime}. </P>
---%>
-
 <c:set var="list" value="${boardList}" />
 <c:set var="total_cnt" value="${totalCnt}" />
 
@@ -103,12 +99,7 @@ http://www.avajava.com/tutorials/lessons/how-do-i-access-a-jstl-variable-in-a-sc
 
     <%              
         int list_num = 2; 
-        
-        //ServletContext ctx = getServletContext();
-        //String paramValue = ctx.getInitParameter("list_num") ; 
-        //System.out.print("paramValue: " + paramValue);
-        //int list_num = Integer.parseInt(paramValue);
-    
+                    
         int total_pages = 0;
 
         System.out.print("total_cnt:");
@@ -126,20 +117,9 @@ http://www.avajava.com/tutorials/lessons/how-do-i-access-a-jstl-variable-in-a-sc
         System.out.print(total_pages);
         System.out.print("\n");
         
-        ///////////////////////////////////////////////////////////////
-        //전체 블럭        
-        
-        // http://blog.naver.com/20klop/40004319618
-        /////////////////////////////////////////////////////////////
-        //context-param 사용 => web.xml에 저장된 값을 조회
-        
-        //ServletContext ctx = getServletContext();
-        
+               
         int block_num = 2;
-        //paramValue = ctx.getInitParameter("block_num") ; 
-        //System.out.print("paramValue: " + paramValue);
-        //int block_num = Integer.parseInt(paramValue);
-        
+                
         /////////////////////////////////////////////////////////////
                         
         
@@ -174,8 +154,7 @@ http://www.avajava.com/tutorials/lessons/how-do-i-access-a-jstl-variable-in-a-sc
     <tr>
         <td>
         
-            <%
-            //for (int i = (c_block - 1) * block_num + 1; i <= c_block * block_num && i <= total_pages; i++)
+            <%            
             for (int i = 1; i <= total_pages; i++) 
             {
             %>           
@@ -198,13 +177,18 @@ http://www.avajava.com/tutorials/lessons/how-do-i-access-a-jstl-variable-in-a-sc
 </table>
 
 <table width=700>
-    <tr>
-        <td><input type=button value="글쓰기"  OnClick="window.location='/SpringMvcBoardMyBatis/show_write_form'">    </td>
-        <td>
-            <form name=searchf method=post action="/SpringMvcBoardMyBatis/searchWithSubject"> 
-            <p align=right><input type=text name=searchStr size=50  maxlength=50>
-            <input type=submit value="글찾기"></p>
-        </td>
-    </tr>
+	<tr>
+		<td><input type=button value="글쓰기"
+			OnClick="window.location='/SpringMvcBoardMyBatis/show_write_form'">
+		</td>
+		<td>
+			<form name=searchf method=post
+				action="/SpringMvcBoardMyBatis/searchWithSubject">
+				<p align=right>
+					<input type=text name=searchStr size=50 maxlength=50> <input
+						type=submit value="글찾기">
+				</p>
+		</td>
+	</tr>
 </table>
 </html>

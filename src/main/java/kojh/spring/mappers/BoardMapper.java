@@ -4,9 +4,6 @@
 package kojh.spring.mappers;
 
 import java.util.ArrayList;
-
-
-
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Param;
@@ -17,18 +14,7 @@ import org.apache.ibatis.annotations.Delete;
 import kojh.db.beans.BoardBean;
 
 public interface  BoardMapper
-{
-	//조회할 범위가 지정된다.
-	/*	
-	SELECT ID,SUBJECT,NAME,TO_CHAR(CREATED_DATE,'yyyy/mm/dd hh:mi:ss'), MAIL,MEMO,HITS
-	FROM	
-	(
-		SELECT	/ *+ INDEX_DESC(A SYS_C007223) * / 
-	        	ID,SUBJECT,NAME, CREATED_DATE, MAIL,MEMO,HITS, ceil( rownum / 2 ) as page
-		FROM 	SPRING_BOARD	A
-	) WHERE page = 2	
-	*/
-		
+{			
 	final String SELECT_PAGE = "SELECT * FROM (	SELECT	ID,SUBJECT,NAME, CREATED_DATE, MAIL,MEMO,HITS, ceil( rownum / #{rowsPerPage} ) as page "+
 			"FROM SPRING_BOARD  ORDER BY ID DESC ) WHERE page = #{page}";
 	
@@ -75,7 +61,6 @@ public interface  BoardMapper
 	        @Result(property="hits", column="HITS")
 	    })
 	BoardBean getSpecificRow(@Param("id") String id);
-	
 		
 	// 전체 글 갯수를 조회
 	@Select(SELECT_CNT_ALL)

@@ -37,13 +37,21 @@ public class HomeController
 		//String formattedDate = dateFormat.format(date);		
 		//model.addAttribute("serverTime", formattedDate );
 		
+		/*
 		//목록을 조회후 저장 시킴.
 		model.addAttribute("totalCnt", new Integer(boardService.getTotalCnt()) ); //Integer objects
 		model.addAttribute("boardList", boardService.getList(1, 2) );
-		
-		
+				
 		return "home";
+		*/
 		
-		//inserted ay home TEST!!!!
+		logger.info("home called!!");		
+
+		//목록을 조회후 저장 시킴.
+		model.addAttribute("totalCnt", new Integer(boardService.getTotalCnt()) );
+		model.addAttribute("current_page", "1");
+		model.addAttribute("boardList", boardService.getList( 1, 2));
+
+		return "listSpecificPage";
 	}	
 }

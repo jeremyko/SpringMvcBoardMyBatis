@@ -11,32 +11,33 @@
 <%@ page import="java.util.Properties"%>
 <%@ page import="java.io.IOException"%>
 <%@ page import="java.io.FileInputStream"%>
+<%@ page import="kojh.spring.board.PageNumberingManager"%>
 
 <html>
 <head>
 <title>목록</title>
 </head>
 
-<c:set var="total_cnt" value="${totalCnt}" />
-<c:set var="list" value="${boardList}" />
+<%--
+<c:set var="list" value="${boardList}" /> 
+--%>
+
 <c:set var="current_page" value="${current_page}" />
+<c:set var="total_cnt" value="${totalCnt}" />
 
 <%  
-    ArrayList<BoardBean> list = (ArrayList<BoardBean>) pageContext.getAttribute("list") ; //jstl in code
+    //ArrayList<BoardBean> list = (ArrayList<BoardBean>) pageContext.getAttribute("list") ; //jstl in code
     int c_page = Integer.parseInt( (String)  (pageContext.getAttribute("current_page") ))  ;
-    String str_c_page = (String)pageContext.getAttribute("current_page");    
-    int total_cnt = ((Integer)(pageContext.getAttribute("total_cnt"))).intValue()  ;
-    
-    System.out.println("list cnt="+list.size());
-    System.out.println("c_page="+c_page);
+    //String str_c_page = (String)pageContext.getAttribute("current_page");    
+    int total_cnt = ((Integer)(pageContext.getAttribute("total_cnt"))).intValue()  ;            
 %>
 
 
 
 <table cellspacing=1 width=700 border=0>
     <tr>
-        <td>총 게시물수: <%=total_cnt%></td>
-        <td><p align=right> 페이지:<%=c_page%> 
+        <td>총 게시물수: <c:out value="${totalCnt}"/></td>
+        <td><p align=right> 페이지:<c:out value="${current_page}"/> 
         </td>
     </tr>
 </table>
@@ -61,7 +62,7 @@
         <td width=100><p align=center>${board.getName()}</p></td>                
         <td width=320>
             <p align=center>
-                <a href="/SpringMvcBoardMyBatis/viewWork?memo_id=${board.getId()}&current_page=<%=str_c_page%>" title="${board.getMemo()}"><c:out value="${board.getSubject()}"/>
+                <a href="/SpringMvcBoardMyBatis/viewWork?memo_id=${board.getId()}&current_page=<c:out value="${current_page}"/>" title="${board.getMemo()}"><c:out value="${board.getSubject()}"/>
             </p>
         </td>                      
         <td width=100><p align=center><c:out value="${board.getCreated_date()}"/></p></td>
@@ -71,28 +72,15 @@
     
     
     
-    <%-- 다음의 페이지 처리하는 부분도 별도의 클래스에서 처리할수도 있겠다.. --%>
+    <%-- 다음의 페이지 처리하는 부분도 별도의 클래스에서 처리할수도 있겠다.. PageNumberingManager --%>
 
     <%              
-        int list_num = 2;
-            
-        int total_pages = 0;
-
-        System.out.print("total_cnt:");
-        System.out.print(total_cnt);
-        System.out.print("\n");
+        int rowsPerPage = 2;
         
         ///////////////////////////////////////////////////////////////
         //전체 페이지
-        if ((total_cnt % list_num) == 0)
-            total_pages = total_cnt / list_num;
-        else
-            total_pages = (total_cnt / list_num) + 1;
-        
-        System.out.print("t_page:");
-        System.out.print(total_pages);
-        System.out.print("\n");
-        
+        int total_pages = PageNumberingManager.getInstance().getTotalPage(total_cnt, rowsPerPage) ;
+                
         ///////////////////////////////////////////////////////////////
         //전체 블럭        
         
@@ -112,26 +100,19 @@
         
         int total_blocks = total_pages / block_num;
 
-        if (total_pages % block_num != 0) // 2%5 = 2
+        if (total_pages % block_num != 0) // 3%2 = 1
         {
-            System.out.print("total_blocks++ !");
+            System.out.print("total_blocks++!\n");
             total_blocks++;
         }
+        
+        System.out.print("total_blocks="+total_blocks);
+        //int c_block = c_page / block_num;
 
-        int c_block = c_page / block_num;
-
-        if (c_page % block_num != 0)
-        {
-            c_block++;
-        }
-
-        System.out.print("t_block:");
-        System.out.print(total_blocks);
-        System.out.print("\n");
-
-        System.out.print("c_block:");
-        System.out.print(c_block);
-        System.out.print("\n");
+        //if (c_page % block_num != 0)
+        //{
+        //    c_block++;
+        //}        
     %>
 
 
@@ -140,9 +121,7 @@
 <table cellspacing=1 width=700 border=1 >
     <tr>
         <td>
-        
             <%
-            //for (int i = (c_block - 1) * block_num + 1; i <= c_block * block_num && i <= total_pages; i++)
             for (int i = 1; i <= total_pages; i++) 
             {
             %>           

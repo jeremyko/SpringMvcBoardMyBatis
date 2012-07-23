@@ -12,6 +12,7 @@
 <%@ page import="java.util.Properties"%>
 <%@ page import="java.io.IOException"%>
 <%@ page import="java.io.FileInputStream"%>
+<%@ page import="kojh.spring.board.PageNumberingManager"%>
 
 <html>
 <head>
@@ -74,23 +75,14 @@
     
     <%-- 다음의 페이지 처리하는 부분도 별도의 클래스에서 처리할수도 있겠다.. --%>
 
-    <%              
-        int list_num = 2;                    
-        int total_pages = 0;
-                
+    <%                  
+        int rowsPerPage = 2;
+        
         ///////////////////////////////////////////////////////////////
         //전체 페이지
-        if ((total_cnt % list_num) == 0)
-            total_pages = total_cnt / list_num;
-        else
-            total_pages = (total_cnt / list_num) + 1;
+        int total_pages = PageNumberingManager.getInstance().getTotalPage(total_cnt, rowsPerPage) ;
         
-        System.out.print("t_page:");
-        System.out.print(total_pages);
-        System.out.print("\n");
-                        
-        int block_num = 2;                               
-        
+        int block_num = 2;
         int total_blocks = total_pages / block_num;
 
         if (total_pages % block_num != 0) // 2%5 = 2
@@ -105,14 +97,7 @@
         {
             c_block++;
         }
-
-        System.out.print("t_block:");
-        System.out.print(total_blocks);
-        System.out.print("\n");
-
-        System.out.print("c_block:");
-        System.out.print(c_block);
-        System.out.print("\n");
+        System.out.print("total_blocks++ !"+total_blocks);
     %>
 
 
