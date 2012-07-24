@@ -1,9 +1,5 @@
 package kojh.spring.board;
 
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 import kojh.db.beans.BoardBean;
 
 import org.slf4j.Logger;
@@ -11,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -43,38 +38,23 @@ public class BbsController
 		return "writeBoard";		
 	}
 		
-	//test---> OK!!
-	/*
-	@RequestMapping( value = "/DoWriteBoard" ,method = RequestMethod.POST)
-	//public String PostWork( @ModelAttribute("boardBeanObjToWrite") BoardBean boardBeanObj, Model model) //OK!! 
-	public String PostWork( BoardBean boardBeanObjToWrite, Model model) //OK Too!!
-	{		
-		logger.info("PostWork called!!");
-		logger.info("memo=["+boardBeanObjToWrite.getMemo()+"]");
-		return "PostWork";
-	}
-	*/
-	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	@RequestMapping(value = "/DoWriteBoard", method = RequestMethod.POST)
-	public String DoWriteBoard( BoardBean boardBeanObjToWrite, Model model) // 이것도 동작하고 위처럼 @ModelAttribute 사용해도 됨
+	public String DoWriteBoard( BoardBean boardBeanObjToWrite,								
+								Model model) // 이것도 동작하고 위처럼 @ModelAttribute 사용해도 됨
 	{
 		logger.info("DoWriteBoard called!!");
-		logger.info("memo=["+boardBeanObjToWrite.getMemo()+"]");
-						
-		//저장!!
+		logger.info("memo=["+boardBeanObjToWrite.getMemo()+"]");						
+
 		boardService.insertBoard(boardBeanObjToWrite);
-				
-		//Date date = new Date();
-		//DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, new Locale("ko"));		
-		//String formattedDate = dateFormat.format(date);		
-		//model.addAttribute("serverTime", formattedDate );
+							
+		model.addAttribute("totalCnt", new Integer(boardService.getTotalCnt()) );
+		model.addAttribute("current_page", "1" ); //글을 작성후에는 처음 페이지로 돌아간다
+		model.addAttribute("boardList", boardService.getList( 1, 2)); 
+					
+		return "listSpecificPage";	
 		
-		//목록을 조회후 저장 시킴.
-		model.addAttribute("totalCnt", new Integer(boardService.getTotalCnt()) ); //Integer objects
-		model.addAttribute("boardList", boardService.getList(1, 2) ); // 1 page 내용을 출력(2개 rows)
-			
-		return "home";		
+				
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,14 +63,16 @@ public class BbsController
 	public String viewWork	( 
 								@RequestParam("memo_id") String memo_id,
 								@RequestParam("current_page") String current_page,
+								@RequestParam("searchStr") String searchStr,
 								 Model model
 							) 
 	{
 		logger.info("viewWork called!!");
-		logger.info("memo_id=["+ memo_id+"] current_page=["+current_page+"]");
+		logger.info("memo_id=["+ memo_id+"] current_page=["+current_page+"] searchStr=["+searchStr+"]");
 			
 		model.addAttribute("memo_id", memo_id ); 
 		model.addAttribute("current_page", current_page ); 
+		model.addAttribute("searchStr", searchStr );
 		model.addAttribute("boardData", boardService.getSpecificRow(memo_id) ); 
 		
 			
@@ -176,6 +158,8 @@ public class BbsController
 		
 		//다시 페이지를 조회한다.
 		model.addAttribute("totalCnt", new Integer(boardService.getTotalCnt()) );
+		//여기서 만약 3페이지의 마지막 데이터를 삭제해서 2페이지만 남게된 상황을 고려해서
+		//current_page를 조정해줘야 할 필요도 있음!
 		model.addAttribute("current_page", current_page);
 		model.addAttribute("boardList", boardService.getList( Integer.parseInt(current_page), 2));
 
@@ -187,17 +171,6 @@ public class BbsController
 	public String searchWithSubject	(	@RequestParam("searchStr") String searchStr,										
 										Model model	) 
 	{
-		/*
-		logger.info("listSpecificPageWork_to_update called!!");
-		logger.info("searchStr=["+ searchStr+"]");
-				 
-		model.addAttribute("totalCnt", new Integer(boardService.getTotalCntBySubject(searchStr)) );		
-		model.addAttribute("searchedList", boardService.getSearchedList( 1,2, searchStr) ); //처음에는 1 페이지만 보여줌
-		model.addAttribute("searchStr", searchStr );
-					
-		return "listSearchedPage";
-		*/		
-		
 		//redirection...
 		return listSearchedSpecificPageWork("1", searchStr, model);//처음에는 1 페이지만 보여줌
 	}
